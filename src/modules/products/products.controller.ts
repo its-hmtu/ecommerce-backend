@@ -8,36 +8,42 @@ import {
   Patch,
   Delete,
   ParseIntPipe,
+  Inject,
 } from '@nestjs/common';
-import { ProductsService } from './products.service';
-import { CreateProductDto, UpdateProductDto } from './dto';
+import { ProductService } from './products.service';
+import { ProductResponseDto } from './dto/product.dto';
+import { IApiResponse } from 'src/common/interfaces/api-response.interface';
+import { IProductService } from './interfaces/product.interface';
+import { throws } from 'assert';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    @Inject('IProductService')
+    private readonly productsService: IProductService,
+  ) {}
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  async getAll(): Promise<IApiResponse<ProductResponseDto[]>> {
+    const products = await this.productsService.getAll();
+
+    return {
+      success: true,
+      message: 'Products retrieved successfully',
+      data: products.map((product) => new ProductResponseDto(product)),
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.productsService.findOne(id);
-  }
+  async getById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<IApiResponse<ProductResponseDto>> {
+    const product = await this.productsService.getById(id);
 
-  @Post()
-  create(@Body() dto: CreateProductDto) {
-    return this.productsService.create(dto);
-  }
-
-  @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
-    return this.productsService.update(id, dto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.productsService.remove(id);
+    return {
+      success: true,
+      message: 'Product retrieved successfully',
+      data: new ProductResponseDto(product),
+    };
   }
 }

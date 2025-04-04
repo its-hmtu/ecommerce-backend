@@ -3,39 +3,49 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/products.entity';
-import { CreateProductDto, UpdateProductDto } from './dto';
+import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
+import { IProduct, IProductService } from './interfaces/product.interface';
 
 @Injectable()
-export class ProductsService {
+export class ProductService implements IProductService {
   constructor(
     @InjectRepository(Product)
     private productRepo: Repository<Product>,
   ) {}
 
-  findAll(): Promise<Product[]> {
-    return this.productRepo.find();
+  async getAll(): Promise<IProduct[]> {
+    return await this.productRepo.find();
   }
 
-  async findOne(id: number): Promise<Product> {
-    const product = await this.productRepo.findOneBy({ id });
-    if (!product) throw new NotFoundException(`Product ${id} not found`);
+  async getById(id: number): Promise<IProduct> {
+    const product = await this.productRepo.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundException(`Product with id ${id} not found`);
+    }
+
     return product;
   }
 
-  async create(data: CreateProductDto): Promise<Product> {
-    const product = this.productRepo.create(data);
-    return await this.productRepo.save(product);
+  async search(query: string): Promise<IProduct[]> {
+    return await this.productRepo.find({
+      where: [{ name: query }, { description: query }],
+    });
   }
 
-  async update(id: number, data: UpdateProductDto): Promise<Product> {
-    const product = await this.productRepo.preload({ id, ...data });
-    if (!product) throw new NotFoundException(`Product ${id} not found`);
-    return this.productRepo.save(product);
+  async create(product: CreateProductDto): Promise<IProduct> {
+    const newProduct = this.productRepo.create(product);
+    return await this.productRepo.save(newProduct);
+  }
+
+  async update(id: number, product: UpdateProductDto): Promise<IProduct> {
+    const existingProduct = await this.getById(id);
+    const updatedProduct = { ...existingProduct, ...product };
+    return await this.productRepo.save(updatedProduct);
   }
 
   async remove(id: number): Promise<void> {
-    const product = await this.productRepo.findOneBy({ id });
-    if (!product) throw new NotFoundException(`Product ${id} not found`);
+    const product = await this.getById(id);
     await this.productRepo.remove(product);
   }
 }
