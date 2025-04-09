@@ -26,4 +26,13 @@ export class UsersService implements IUserService {
 
     return user;
   }
+
+  async findAll(): Promise<IUser[]> {
+    const users = await this.userRepo.find();
+    if (!users || users.length === 0) {
+      throw new NotFoundException('No users found');
+    }
+
+    return users;
+  }
 }

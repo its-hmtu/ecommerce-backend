@@ -10,11 +10,9 @@ import {
   ParseIntPipe,
   Inject,
 } from '@nestjs/common';
-import { ProductService } from './products.service';
 import { ProductResponseDto } from './dto/product.dto';
 import { IApiResponse } from 'src/common/interfaces/api-response.interface';
 import { IProductService } from './interfaces/product.interface';
-import { throws } from 'assert';
 
 @Controller('products')
 export class ProductsController {

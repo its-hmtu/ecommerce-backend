@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsStrongPassword,
   MinLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -29,7 +30,14 @@ export class CreateUserDto {
   })
   @IsString()
   @MinLength(8, {
-    message: 'Password is too short. Minimum length is 8 characters.',
+    message: 'password is too short. Minimum length is 8 characters.',
+  })
+  @IsStrongPassword({
+    minLength: 8,
+    minUppercase: 1,
+    minLowercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
   })
   password: string;
 

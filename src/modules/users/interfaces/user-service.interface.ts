@@ -6,6 +6,6 @@ export interface IUserService {
   // getUserById(id: number | string): Promise<IUser>;
   // getUserByUsername(username: string): Promise<IUser>;
   findByEmail(email: string): Promise<IUser>;
-  // getAllUsers(): Promise<IUser[]>;
+  findAll(): Promise<IUser[]>;
   // deleteUser(id: number | string): Promise<void>;
 }
