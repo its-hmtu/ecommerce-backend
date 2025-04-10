@@ -9,30 +9,20 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { HealthModule } from './modules/health/health.module';
+import { AddressesModule } from './modules/addresses/addresses.module';
 
 @Module({
   imports: [
-    AdminModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    DatabaseModule,
+    HealthModule,
     ProductsModule,
     UsersModule,
-    TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'postgres',
-        host: process.env.DB_HOST,
-        port: +(process.env.DB_PORT || 5432),
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        autoLoadEntities: true,
-        synchronize: false,
-        retryAttempts: 2, // Reduced retry attempts
-        retryDelay: 1000, // Shorter delay
-        // Critical addition:
-        options: { enableArithAbort: true },
-        connectionTimeoutMillis: 2000, // Fail fast
-      }),
-    }),
+    AddressesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

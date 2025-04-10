@@ -5,9 +5,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './config/swagger.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    abortOnError: false,
-  });
+  const app = await NestFactory.create(AppModule, {});
 
   setupSwagger(app);
 
@@ -29,27 +27,8 @@ async function bootstrap() {
       'Bootstrap',
     );
   });
-
-  setTimeout(async () => {
-    try {
-      const typeOrm = app.get('TypeOrmModuleOptions');
-      console.log(
-        'DB connection status:',
-        typeOrm ? 'Connected' : 'Not connected',
-      );
-    } catch (err) {
-      console.log('DB not available, but app is running');
-    }
-  }, 5000);
 }
 
-process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled Rejection:', reason);
-});
-
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-});
 bootstrap().catch((error) => {
   Logger.error('Error during application bootstrap', error, 'Bootstrap');
 });

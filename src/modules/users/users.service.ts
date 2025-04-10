@@ -18,6 +18,22 @@ export class UsersService implements IUserService {
     return await this.userRepo.save(newUser);
   }
 
+  async findById(id: number | string): Promise<IUser> {
+    const user = await this.userRepo.findOne({ where: { id: Number(id) } });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return user;
+  }
+
+  async findByUsername(username: string): Promise<IUser> {
+    const user = await this.userRepo.findOne({ where: { username } });
+    if (!user) {
+      throw new NotFoundException(`User with username ${username} not found`);
+    }
+    return user;
+  }
+
   async findByEmail(email: string): Promise<IUser> {
     const user = await this.userRepo.findOne({ where: { email } });
     if (!user) {

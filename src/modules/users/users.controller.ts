@@ -12,8 +12,8 @@ import { toDto } from 'src/utils/transform-to-dto';
 @Controller('users')
 export class UsersController {
   constructor(
-    @Inject('IUserService')
-    private readonly userService: IUserService,
+    // @Inject('IUserService')
+    private readonly userService: UsersService,
   ) {}
 
   @Post()
