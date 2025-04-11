@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/products.entity';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
-import { IProduct, IProductService } from './interfaces/product.interface';
+import { IProduct } from './interfaces/product.interface';
+import { IProductService } from './interfaces/product-service.interface';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -13,11 +14,11 @@ export class ProductService implements IProductService {
     private productRepo: Repository<Product>,
   ) {}
 
-  async getAll(): Promise<IProduct[]> {
+  async findAll(): Promise<IProduct[]> {
     return await this.productRepo.find();
   }
 
-  async getById(id: number): Promise<IProduct> {
+  async findById(id: number): Promise<IProduct> {
     const product = await this.productRepo.findOne({ where: { id } });
 
     if (!product) {
@@ -39,13 +40,14 @@ export class ProductService implements IProductService {
   }
 
   async update(id: number, product: UpdateProductDto): Promise<IProduct> {
-    const existingProduct = await this.getById(id);
+    const existingProduct = await this.findById(id);
     const updatedProduct = { ...existingProduct, ...product };
     return await this.productRepo.save(updatedProduct);
   }
 
-  async remove(id: number): Promise<void> {
-    const product = await this.getById(id);
+  async delete(id: number): Promise<boolean> {
+    const product = await this.findById(id);
     await this.productRepo.remove(product);
+    return true;
   }
 }

@@ -7,12 +7,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AdminModule } from '../admin/admin.module';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, RolesGuard],
   controllers: [AuthController],
   imports: [
     UsersModule,
+    AdminModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

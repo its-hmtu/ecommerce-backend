@@ -12,9 +12,21 @@ export class AdminService implements IAdminService {
     private readonly adminRepo: Repository<Admin>,
   ) {}
 
-  async getAdminById(id: number | string): Promise<IAdmin | null> {
+  async findById(id: number | string): Promise<IAdmin | null> {
     const admin = await this.adminRepo.findOne({
       where: { id: typeof id === 'string' ? parseInt(id, 10) : id },
+    });
+
+    if (!admin) {
+      return null;
+    }
+
+    return admin;
+  }
+
+  async findByEmail(email: string): Promise<IAdmin | null> {
+    const admin = await this.adminRepo.findOne({
+      where: { email },
     });
 
     if (!admin) {

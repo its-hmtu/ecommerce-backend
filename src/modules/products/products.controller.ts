@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ProductResponseDto } from './dto/product.dto';
 import { IApiResponse } from 'src/common/interfaces/api-response.interface';
-import { IProductService } from './interfaces/product.interface';
+import { IProductService } from './interfaces/product-service.interface';
 
 @Controller('products')
 export class ProductsController {
@@ -23,7 +23,7 @@ export class ProductsController {
 
   @Get()
   async getAll(): Promise<IApiResponse<ProductResponseDto[]>> {
-    const products = await this.productsService.getAll();
+    const products = await this.productsService.findAll();
 
     return {
       success: true,
@@ -36,12 +36,12 @@ export class ProductsController {
   async getById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<IApiResponse<ProductResponseDto>> {
-    const product = await this.productsService.getById(id);
+    const product = await this.productsService.findById(id);
 
     return {
       success: true,
       message: 'Product retrieved successfully',
-      data: new ProductResponseDto(product),
+      data: product,
     };
   }
 }

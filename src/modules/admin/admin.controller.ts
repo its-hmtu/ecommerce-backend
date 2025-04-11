@@ -9,7 +9,7 @@ export class AdminController {
   @Get(':id')
   async getAdminById(@Param('id') id: string): Promise<any> {
     try {
-      const admin = await this.adminService.getAdminById(id);
+      const admin = await this.adminService.findById(id);
       return {
         success: true,
         message: 'Admin retrieved successfully',

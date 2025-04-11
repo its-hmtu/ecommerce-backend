@@ -13,6 +13,10 @@ import { IApiResponse } from 'src/common/interfaces/api-response.interface';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { UserResponseDto } from '../users/dto/user-response.dto';
+import { LocalAuthGuard } from './guards/local.guard';
+import { JwtAuthGuard } from './guards/jwt.guard';
+import { Roles } from './decorators/roles.decorator';
+import { RolesGuard } from './guards/roles.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -47,13 +51,40 @@ export class AuthController {
     description: 'User logged in successfully',
     type: LoginResponseDto,
   })
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req): Promise<IApiResponse<LoginResponseDto>> {
-    const result = await this.authService.login(req.user);
+    const isAdmin = req.user.role === 'admin' || req.user.role === 'superadmin';
+
+    let result;
+    if (isAdmin) {
+      result = await this.authService.loginAsAdmin(req.user);
+    } else {
+      result = await this.authService.login(req.user);
+    }
+
     return {
       success: true,
       message: 'Login successful',
+      data: result,
+    };
+  }
+
+  @ApiOperation({
+    summary: 'Login as admin',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Admin logged in successfully',
+    type: LoginResponseDto,
+  })
+  @UseGuards(LocalAuthGuard)
+  @Post('admin/login')
+  async loginAsAdmin(@Request() req): Promise<IApiResponse<LoginResponseDto>> {
+    const result = await this.authService.loginAsAdmin(req.user);
+    return {
+      success: true,
+      message: 'Admin login successful',
       data: result,
     };
   }
@@ -66,10 +97,13 @@ export class AuthController {
     description: 'User profile retrieved successfully',
     type: UserResponseDto,
   })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'superadmin')
   @Get('profile')
-  async getProfile(@Request() req): Promise<IApiResponse<UserResponseDto>> {
-    const user = await this.authService.getProfile(parseInt(req.user.id));
+  async getProfile(@Request() req): Promise<IApiResponse<any>> {
+    // const user = await this.authService.getProfile(parseInt(req.user.id));
+    console.log(req.user)
+    const user = await this.authService.getAdminProfile(parseInt(req.user.id));
     return {
       success: true,
       message: 'User profile retrieved successfully',
