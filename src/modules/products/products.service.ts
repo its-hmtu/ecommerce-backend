@@ -3,9 +3,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/products.entity';
-import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { IProduct } from './interfaces/product.interface';
 import { IProductService } from './interfaces/product-service.interface';
+import { CreateProductDto, UpdateProductDto } from './dto';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -30,7 +30,7 @@ export class ProductService implements IProductService {
 
   async search(query: string): Promise<IProduct[]> {
     return await this.productRepo.find({
-      where: [{ name: query }, { description: query }],
+      where: [{ product_name: query }, { product_description: query }],
     });
   }
 

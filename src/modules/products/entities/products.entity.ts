@@ -1,17 +1,29 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { IProduct } from '../interfaces/product.interface';
 
 @Entity('products')
 export class Product implements IProduct {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column()
-  name: string;
+  product_name: string;
 
   @Column()
-  description: string;
+  product_description: string;
 
   @Column('decimal')
   price: number;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }

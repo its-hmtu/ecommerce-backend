@@ -1,8 +1,8 @@
 export interface IProduct {
   id: number;
-  name: string;
-  description: string;
+  product_name: string;
+  product_description: string;
   price: number;
-  discount?: number;
-  
+  createdAt: Date;
+  updatedAt: Date;
 }

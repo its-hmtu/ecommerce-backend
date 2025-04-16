@@ -9,17 +9,20 @@ import {
   Delete,
   ParseIntPipe,
   Inject,
+  UseGuards,
 } from '@nestjs/common';
-import { ProductResponseDto } from './dto/product.dto';
 import { IApiResponse } from 'src/common/interfaces/api-response.interface';
 import { IProductService } from './interfaces/product-service.interface';
+import { ProductService } from './products.service';
+import { CreateProductDto, ProductResponseDto } from './dto';
+import { ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('products')
 export class ProductsController {
-  constructor(
-    @Inject('IProductService')
-    private readonly productsService: IProductService,
-  ) {}
+  constructor(private readonly productsService: ProductService) {}
 
   @Get()
   async getAll(): Promise<IApiResponse<ProductResponseDto[]>> {
@@ -42,6 +45,26 @@ export class ProductsController {
       success: true,
       message: 'Product retrieved successfully',
       data: product,
+    };
+  }
+
+  @Post()
+  @ApiResponse({
+    status: 201,
+    description: 'Product created successfully',
+    type: ProductResponseDto,
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async create(
+    @Body() product: CreateProductDto,
+  ): Promise<IApiResponse<ProductResponseDto>> {
+    const newProduct = await this.productsService.create(product);
+
+    return {
+      success: true,
+      message: 'Product created successfully',
+      data: new ProductResponseDto(newProduct),
     };
   }
 }
