@@ -6,7 +6,7 @@ type Payload = {
   sub: number; // User ID
   email: string;
   role: string;
-}
+};
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

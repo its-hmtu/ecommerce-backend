@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { IAdmin } from '../interfaces/admin.interface';
+import { Role } from 'src/common/enums';
 
 @Entity('admins')
 export class Admin implements IAdmin {
@@ -15,13 +22,13 @@ export class Admin implements IAdmin {
   @Column({ unique: true })
   email: string;
 
-  @Column({ default: 'admin' })
-  role: 'admin' | 'superadmin';
+  @Column({ type: 'enum', enum: Role, default: Role.MODERATOR })
+  role: Role;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
   @Column({ type: 'timestamp', nullable: true })

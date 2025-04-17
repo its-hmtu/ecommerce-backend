@@ -25,5 +25,5 @@ export class ArchiveProduct implements IArchiveProduct {
   product: IProduct;
 
   @CreateDateColumn({ type: 'timestamp' })
-  achieveAt: Date;
+  archivedAt: Date;
 }

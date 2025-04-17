@@ -8,7 +8,7 @@ import { DataSource } from 'typeorm';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (config: ConfigService) => {
+      useFactory: (config: ConfigService) => {
         try {
           return {
             type: 'postgres',
@@ -19,7 +19,7 @@ import { DataSource } from 'typeorm';
             database: config.get('DB_NAME'),
             entities: [__dirname + '/../**/*.entity{.ts,.js}'],
             synchronize: true,
-            logging: true,
+            // logging: true,
           };
         } catch (error) {
           console.error(

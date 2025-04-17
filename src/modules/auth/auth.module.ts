@@ -9,9 +9,16 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AdminModule } from '../admin/admin.module';
 import { RolesGuard } from './guards/roles.guard';
+import { AccessControlService } from './shared/access-control.service';
 
 @Module({
-  providers: [AuthService, LocalStrategy, JwtStrategy, RolesGuard],
+  providers: [
+    AuthService,
+    AccessControlService,
+    LocalStrategy,
+    JwtStrategy,
+    RolesGuard,
+  ],
   controllers: [AuthController],
   imports: [
     UsersModule,

@@ -17,6 +17,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from 'src/common/enums';
 
 @Controller('products')
 export class ProductsController {
@@ -34,14 +35,26 @@ export class ProductsController {
     isArray: true,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'superadmin')
-  async getAllArchived(): Promise<IApiResponse<ProductResponseDto[]>> {
-    const archivedProducts = await this.productsService.findAllArchived();
+  @Roles(Role.ADMIN)
+  async getAllArchived(
+    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('limit', ParseIntPipe) limit: number = 10,
+  ): Promise<IApiResponse<ProductResponseDto[]>> {
+    const { data, meta } = await this.productsService.findAllArchived(
+      page,
+      limit,
+    );
 
     return {
       success: true,
       message: 'Archived products retrieved successfully',
-      data: archivedProducts.map((product) => new ProductResponseDto(product)),
+      data: data.map((product) => new ProductResponseDto(product)),
+      meta: {
+        currentPage: meta.currentPage,
+        itemsPerPage: meta.itemsPerPage,
+        totalItems: meta.totalItems,
+        totalPages: meta.totalPages,
+      },
     };
   }
 
@@ -56,7 +69,7 @@ export class ProductsController {
     type: ProductResponseDto,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'superadmin')
+  @Roles(Role.ADMIN)
   async archiveProduct(
     @Query('id', ParseIntPipe) id: number,
   ): Promise<IApiResponse<ProductResponseDto>> {
@@ -132,7 +145,7 @@ export class ProductsController {
     type: ProductResponseDto,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'superadmin')
+  @Roles(Role.ADMIN)
   async createProduct(
     @Body() product: CreateProductDto,
   ): Promise<IApiResponse<ProductResponseDto>> {
@@ -156,7 +169,7 @@ export class ProductsController {
     type: ProductResponseDto,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'superadmin')
+  @Roles(Role.ADMIN)
   async updateProduct(
     @Param('id', ParseIntPipe) id: number,
     @Body() product: CreateProductDto,

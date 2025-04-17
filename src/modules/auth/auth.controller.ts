@@ -17,6 +17,7 @@ import { LocalAuthGuard } from './guards/local.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { Roles } from './decorators/roles.decorator';
 import { RolesGuard } from './guards/roles.guard';
+import { Role } from 'src/common/enums';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -54,7 +55,8 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req): Promise<IApiResponse<LoginResponseDto>> {
-    const isAdmin = req.user.role === 'admin' || req.user.role === 'superadmin';
+    console.log(req.user);
+    const isAdmin = req.user.role === 'admin';
 
     let result;
     if (isAdmin) {
@@ -98,11 +100,11 @@ export class AuthController {
     type: UserResponseDto,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'superadmin')
+  @Roles(Role.ADMIN)
   @Get('profile')
   async getProfile(@Request() req): Promise<IApiResponse<any>> {
     // const user = await this.authService.getProfile(parseInt(req.user.id));
-    console.log(req.user)
+    console.log(req.user);
     const user = await this.authService.getAdminProfile(parseInt(req.user.id));
     return {
       success: true,

@@ -4,5 +4,5 @@ export interface IArchiveProduct {
   id: number;
   productId: number;
   product: IProduct;
-  achieveAt: Date;
+  archivedAt: Date;
 }

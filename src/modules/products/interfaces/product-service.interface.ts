@@ -3,7 +3,10 @@ import { IArchiveProduct } from './archive-product.interface';
 import { IProduct } from './product.interface';
 
 export interface IProductService {
-  findAll(page: number, limit: number): Promise<{
+  findAll(
+    page: number,
+    limit: number,
+  ): Promise<{
     data: IProduct[];
     meta: IPaginationMeta;
   }>;
@@ -16,5 +19,11 @@ export interface IProductService {
   delete(id: number | string): Promise<boolean>;
   search(query: string): Promise<IProduct[]>;
   archive(id: number | string): Promise<IArchiveProduct>;
-  findAllArchived(): Promise<IArchiveProduct[]>;
+  findAllArchived(
+    page: number,
+    limit: number,
+  ): Promise<{
+    data: IArchiveProduct[];
+    meta: IPaginationMeta;
+  }>;
 }

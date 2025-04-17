@@ -98,10 +98,29 @@ export class ProductService implements IProductService {
     return await this.archiveProductRepo.save(archived);
   }
 
-  async findAllArchived(): Promise<IArchiveProduct[]> {
-    return await this.archiveProductRepo.find({
+  async findAllArchived(
+    page: number,
+    limit: number,
+  ): Promise<{
+    data: IArchiveProduct[];
+    meta: IPaginationMeta;
+  }> {
+    const skip = (page - 1) * limit;
+    const take = limit;
+    const archivedProducts = await this.archiveProductRepo.findAndCount({
+      skip,
+      take,
       relations: ['product'],
-      order: { achieveAt: 'DESC' },
+      order: { archivedAt: 'DESC' },
     });
+    return {
+      data: archivedProducts[0],
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: archivedProducts[1],
+        totalPages: Math.ceil(archivedProducts[1] / limit),
+      },
+    };
   }
 }
