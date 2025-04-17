@@ -19,6 +19,7 @@ import { DataSource } from 'typeorm';
             database: config.get('DB_NAME'),
             entities: [__dirname + '/../**/*.entity{.ts,.js}'],
             synchronize: true,
+            logging: true,
           };
         } catch (error) {
           console.error(

@@ -1,7 +1,12 @@
+import { IPaginationMeta } from 'src/common/interfaces/api-response.interface';
+import { IArchiveProduct } from './archive-product.interface';
 import { IProduct } from './product.interface';
 
 export interface IProductService {
-  findAll(): Promise<IProduct[]>;
+  findAll(page: number, limit: number): Promise<{
+    data: IProduct[];
+    meta: IPaginationMeta;
+  }>;
   findById(id: number | string): Promise<IProduct>;
   create(productData: Partial<IProduct>): Promise<IProduct>;
   update(
@@ -10,4 +15,6 @@ export interface IProductService {
   ): Promise<IProduct | null>;
   delete(id: number | string): Promise<boolean>;
   search(query: string): Promise<IProduct[]>;
+  archive(id: number | string): Promise<IArchiveProduct>;
+  findAllArchived(): Promise<IArchiveProduct[]>;
 }
